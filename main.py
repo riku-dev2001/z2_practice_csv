@@ -13,10 +13,15 @@ if len(sys.argv) > 1:
 else:
     filename = file_path
 
-# グラフ用データ
-df = pd.read_csv(filename)
+try:
+    # グラフ用データ
+    df = pd.read_csv(filename)
 
-# グラフの表示
-plt.plot(df["date"], df["sales"]) # グラフ作成
-plt.savefig("graph.png") # 保存
-plt.show() # 表示（show()でバッファがクリアされるから、保存後にやる）
+    # グラフの表示
+    plt.plot(df["date"], df["sales"]) # グラフ作成
+    plt.savefig("graph.png") # 保存
+    plt.show() # 表示（show()でバッファがクリアされるから、保存後にやる）
+
+except Exception as e:
+    # エラー内容を表示
+    print(f"データの処理中に予期せぬエラーが発生しました: {e}")
