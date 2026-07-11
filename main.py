@@ -38,7 +38,6 @@ try:
     # フラフの調整
     # グラフに平均を表示
     mean = df['sales'].mean()
-    high_sales = df[df["sales"] >= mean]
     plt.axhline(y=mean, color="red", linestyle="--", label=f"平均：{mean:,.0f}円")
 
     #縦軸目盛りの調整
