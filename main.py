@@ -1,7 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 import sys
 import os
+
+# 文字設定
+plt.rcParams["font.family"] = "MS Gothic" if os.name == "nt" else "AppleGothic"
 
 # CSVファイルのパスを設定する
 BASE_DIR = os.path.dirname(__file__) # pyファイルの場所
@@ -16,10 +20,41 @@ else:
 try:
     # グラフ用データ
     df = pd.read_csv(filename)
+    # dateの調整
+    df["date"] = pd.to_datetime(df["date"], format='mixed')
+    df = df.sort_values("date").reset_index(drop=True)
 
+    # データの情報をターミナルに表示
+    print("--- データ概要 ---")
+    print(f"データ数 : {len(df)}件")
+    print(f"平均売上 : {df['sales'].mean():,.0f}円")
+    print(f"最高売上 : {df['sales'].max():,.0f}円")
+    print("--------------------")
+
+    # グラフ描画
+    plt.plot(df.index, df["sales"], marker="o", color="blue", label="売上")
+    plt.xticks(df.index, df["date"].dt.strftime('%Y-%m-%d'), rotation=45)
+
+    # フラフの調整
+    # グラフに平均を表示
+    mean = df['sales'].mean()
+    high_sales = df[df["sales"] >= mean]
+    plt.axhline(y=mean, color="red", linestyle="--", label=f"平均：{mean:,.0f}円")
+
+    #縦軸目盛りの調整
+    y_min = df["sales"].min()
+    y_max = df["sales"].max()
+    # 最小値から最大値の「＋11」の範囲まで、10刻みで目盛りを作る
+    plt.yticks(np.arange(y_min, y_max + 11, 10))
+    
+    # グラフの説明
+    plt.grid(True, linestyle=":", alpha=0.6)
+    plt.legend(loc="upper left", fontsize=10) # 左上に説明を出す
+    plt.tight_layout() # 文字のレイアウト調整
+    
     # グラフの表示
-    plt.plot(df["date"], df["sales"]) # グラフ作成
-    plt.savefig("graph.png") # 保存
+    save_path = os.path.join(BASE_DIR, "graph.png") # 保存先
+    plt.savefig(save_path) # 保存
     plt.show() # 表示（show()でバッファがクリアされるから、保存後にやる）
 
 except Exception as e:
